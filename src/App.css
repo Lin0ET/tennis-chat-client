@@ -1,13 +1,24 @@
-/* 整體佈局 */
-.chat-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f7f7f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* 背景圖片和容器 */
+.chat-background {
+  background-image: url('https://plus.unsplash.com/premium_photo-1677490165361-b858f633ccbb?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8dGVubmlzJTIwY291cnQlMjBiYWNrZ3JvdW5kfGVufDB8fDB8fHww'); /* 替換成實際的背景圖片 URL */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.chat-container {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.9); /* 半透明白色背景 */
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 標題 */
 .title {
   text-align: center;
   font-size: 24px;
@@ -15,23 +26,48 @@
   margin-bottom: 20px;
 }
 
-/* 聊天框和輸入區域 */
+/* 聊天框 */
 .chat-box {
-  display: flex;
-  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f1f1f1;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
+.message {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.user-message {
+  background-color: #daf1da;
+  align-self: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+.bot-message {
+  background-color: #e3e3e3;
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* 輸入區域 */
 .input-section {
   display: flex;
-  margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .message-input {
   flex: 1;
   padding: 10px;
-  font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 16px;
 }
 
 .send-button {
@@ -39,7 +75,7 @@
   padding: 10px 20px;
   font-size: 16px;
   background-color: #007bff;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -48,20 +84,4 @@
 
 .send-button:hover {
   background-color: #0056b3;
-}
-
-/* 回應訊息和圖片 */
-.response-section {
-  margin-top: 20px;
-}
-
-.response-message {
-  font-size: 16px;
-  color: #333;
-}
-
-.response-image {
-  max-width: 100%;
-  margin-top: 10px;
-  border-radius: 4px;
 }
