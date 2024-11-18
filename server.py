@@ -1,13 +1,11 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # 新增 CORS 導入
+from flask_cors import CORS
 import sqlite3
 import requests
-
+import json
 
 app = Flask(__name__)
-CORS(app)  # 啟用 CORS，允許所有來源訪問
-# 若只想允許特定的來源，例如 React 頁面所在的 localhost:3000，可以這樣設置：
-# CORS(app, origins=["http://localhost:3000"])
+CORS(app)  # 允許跨域訪問
 
 # 連接 SQLite 資料庫
 def get_db_connection():
@@ -28,21 +26,39 @@ def retrieve_answer_from_db(user_question):
         return result['answer'], result['image_url']
     return None, None
 
-# 使用 Llama 3.1 生成回答
+# 使用 Llama 3.1 生成回答（流式回應支持）
 def generate_answer_with_llama(user_question):
-    # 生成的 API 請求 URL
-    llama_url = "http://140.115.126.192:11434/generate"  # 替換為提供的 Llama 3.1 API URL
+    llama_url = "http://140.115.126.192:11434/api/generate"  # 正確的 Llama 3.1 API 路徑
     headers = {"Content-Type": "application/json"}
     payload = {
-        "prompt": user_question,
-        "max_tokens": 100  # 可以根據需求調整回答的長度
+        "model": "llama3.1",       # 指定模型名稱
+        "prompt": user_question,   # 用戶問題
+        "max_tokens": 100          # 可以根據需求調整回答的長度
     }
     
-    response = requests.post(llama_url, headers=headers, json=payload)
-    
-    if response.status_code == 200:
-        return response.json().get("generated_text", "")
-    else:
+    try:
+        response = requests.post(llama_url, headers=headers, json=payload, stream=True)
+        response.raise_for_status()  # 確認 HTTP 請求成功
+
+        # 累積生成的回應文字
+        final_text = ""
+        
+        # 逐行讀取流式回應
+        for line in response.iter_lines():
+            if line:
+                data = json.loads(line.decode('utf-8'))
+                
+                # 累加生成的回應片段
+                final_text += data.get("response", "")
+                
+                # 檢查是否已完成回應
+                if data.get("done"):
+                    break
+
+        return final_text if final_text else "抱歉，未能獲得回應。"
+
+    except requests.exceptions.RequestException as e:
+        print(f"Llama 3.1 API 請求錯誤: {e}")
         return "抱歉，無法生成回應，請稍後再試。"
 
 # 回答用戶問題
