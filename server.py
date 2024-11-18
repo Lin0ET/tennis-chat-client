@@ -28,14 +28,21 @@ def retrieve_answer_from_db(user_question):
 
 # 使用 Llama 3.1 生成回答（流式回應支持）
 def generate_answer_with_llama(user_question):
-    llama_url = "http://140.115.126.192:11434/api/generate"  # 正確的 Llama 3.1 API 路徑
+    llama_url = "http://140.115.126.192:11434/api/generate"
     headers = {"Content-Type": "application/json"}
+
+    # 添加指令以設定口吻、角色和語言
+    prompt = (
+        "請用繁體中文簡短的回答以下問題，大約100字上下，回答時請保持專業且親切的語氣，並假設自己是一位經驗豐富的網球教練：\n\n"
+        f"問題：{user_question}\n"
+        "回答："
+    )
+
     payload = {
-        "model": "llama3.1",       # 指定模型名稱
-        "prompt": user_question,   # 用戶問題
-        "max_tokens": 100          # 可以根據需求調整回答的長度
+        "model": "llama3.1",
+        "prompt": prompt,  # 使用帶有指令的提示字元
+        "max_tokens": 150  # 可以根據需求調整回答的長度
     }
-    
     try:
         response = requests.post(llama_url, headers=headers, json=payload, stream=True)
         response.raise_for_status()  # 確認 HTTP 請求成功
